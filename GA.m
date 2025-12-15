@@ -1,9 +1,8 @@
 clear; clc; close all;
 
-% ==================== Parameters ====================
 start_pos = [0, 0];
 goal_pos  = [10, 10];
-obstacles = [5, 5, 1.7];           % single obstacle in the middle
+obstacles = [5, 5, 1.7];          
 
 pop_size        = 80;
 num_points      = 10;
@@ -14,7 +13,6 @@ mutation_rate   = 0.3;
 x_min = -1;  x_max = 11;
 y_min = -1;  y_max = 11;
 
-% ==================== Initialize Population ====================
 population = zeros(pop_size, num_points*2);
 for i = 1:pop_size
     x = linspace(start_pos(1), goal_pos(1), num_points+2);
@@ -29,7 +27,6 @@ end
 best_path = [];
 best_fitness_global = inf;
 
-% ==================== Main GA Loop ====================
 for gen = 1:max_generations
     
     fitness = zeros(pop_size,1);
@@ -60,7 +57,6 @@ for gen = 1:max_generations
         best_path = paths{best_idx};
     end
     
-    % ==================== Plot every 12 generations ====================
     if mod(gen,12)==0 || gen==1 || gen==max_generations || best_fitness_global < 15
         figure(1); clf; hold on; axis equal; grid on; box on;
         title(sprintf('Generation %d  →  Best Fitness = %.3f', gen, best_fitness_global), ...
@@ -93,7 +89,6 @@ for gen = 1:max_generations
         break;
     end
     
-    % ==================== Create Next Generation ====================
     new_population = zeros(pop_size, num_points*2);
     [~, idx] = sort(fitness);
     new_population(1:elite_count,:) = population(idx(1:elite_count),:);
@@ -120,7 +115,6 @@ for gen = 1:max_generations
     population = new_population;
 end
 
-% ==================== Final Beautiful Plot ====================
 figure(2); hold on; axis equal; grid on; box on;
 title('Final Optimal Path','FontSize',18,'FontWeight','bold');
 viscircles(obstacles(1:2), obstacles(3), 'Color','red','LineWidth',4);
@@ -131,7 +125,6 @@ legend('Optimal Path','Start','Goal','Location','bestoutside');
 xlabel('X','FontSize',14); ylabel('Y','FontSize',14);
 fprintf('=== DONE === Final best path length ≈ %.3f\n', best_fitness_global);
 
-% ==================== Collision Detection Function ====================
 function intersects = lineIntersectsCircle(p1, p2, obs)
     intersects = false;
     for k = 1:size(obs,1)
@@ -148,4 +141,5 @@ function intersects = lineIntersectsCircle(p1, p2, obs)
             end
         end
     end
+
 end
