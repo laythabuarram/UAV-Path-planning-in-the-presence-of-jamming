@@ -1,7 +1,5 @@
-%% PSO with Animation + GIF Export + Partial Clipping (No Obstacles)
 clear; clc; close all;
-%% ------------------- Parameters -------------------
-goal        = [9, 9];          % Target position
+goal        = [9, 9];         
 l_bound     = [-10, -10];
 u_bound     = [10, 10];
 swarmsize   = 40;
@@ -10,21 +8,17 @@ iterations  = 70;
 omega       = 0.7;
 phip        = 1.5;
 phig        = 1.5;
-%% ------------------- Objective Function -------------------
 objective = @(x) objective_without_obstacle(x, goal);
-%% ------------------- Run PSO -------------------
 [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
     objective, l_bound, u_bound, swarmsize, dimension, iterations, ...
     omega, phip, phig, goal);
 fprintf('\nFinal Best Position: [%.4f , %.4f]\n', ...
         final_gbest_pos(1), final_gbest_pos(2));
-%% =================== PSO FUNCTION ===================
 function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
     objective, l_bound, u_bound, swarmsize, dimension, iterations, ...
     omega, phip, phig, goal)
     ns = swarmsize;
     nd = dimension;
-    %% -------- Initialize particles (random) --------
     arr = zeros(ns, nd);
     for i = 1:ns
         for d = 1:nd
@@ -45,7 +39,6 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
     best_scores = zeros(1, iterations);
     pos_arr{1} = arr;
     pos_local{1} = best_local;
-    %% ------------------- Visualization -------------------
     figure('Name','PSO Animation','NumberTitle','off');
     axis([l_bound(1) u_bound(1) l_bound(2) u_bound(2)]);
     axis equal;
@@ -70,13 +63,11 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
     % Display initial title (Iteration 0)
     title(sprintf('Iteration 0 / %d | Best = %.6f', ...
               iterations, obj_global));
-    drawnow; % Ensure the initial state is plotted before the loop starts
+    drawnow; 
     
-    %% ------------------- GIF settings -------------------
     gif_filename = 'PSO_selected_iterations.gif';
     gif_iters = [1 10 50 70];
-    %% ------------------- Main Loop -------------------
-    scale = 0.4; % طول الأسهم الأصلي
+    scale = 0.4; 
     for k = 1:iterations
         rp = rand(ns,nd);
         rg = rand(ns,nd);
@@ -109,7 +100,6 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
         pos_local{k+1} = best_local;
         pos_vt{k} = Vt;
         best_scores(k) = obj_global;
-        % ---------------- Update Animation ----------------
         set(h_particles,'XData',arr(:,1),'YData',arr(:,2));
         % Partial clipping arrows
         Ux = Vt(:,1)*scale;
@@ -145,8 +135,8 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
         drawnow;
         pause(0.03);
         
-        % -------- Save current iteration as image and to GIF --------
-        
+
+                
         % NEW LOGIC: Save Iteration 1 as a standalone PNG image
         if k == 1
             frame = getframe(gcf);
@@ -154,8 +144,8 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
             fprintf('\nSwarm state for Iteration 1 saved to: PSO_iteration_01.png\n');
         end
 
-        % Original GIF saving logic (using gif_iters, which includes k=1)
-        if ismember(k, gif_iters)
+
+                if ismember(k, gif_iters)
             frame = getframe(gcf);
             img = frame2im(frame);
             [imind, cm] = rgb2ind(img, 256);
@@ -170,7 +160,8 @@ function [pos_arr, pos_local, pos_vt, best_scores, final_gbest_pos] = PSO( ...
     end
     final_gbest_pos = best_global;
 end
-%% =================== Objective Function ===================
+
 function cost = objective_without_obstacle(x, goal)
-    cost = norm(x - goal)^2;  % distance to goal
+    cost = norm(x - goal)^2; 
+
 end
