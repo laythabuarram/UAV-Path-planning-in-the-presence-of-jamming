@@ -1,17 +1,10 @@
-%% Simulated Annealing TSP - Single Window Version
 clc; clear; close all;
 
-%% --- 1. Generate cities ---
 N = 20;
 cities = rand(N,2) * 100;
 
-%% --- 2. Run Simulated Annealing ---
 [best_route, best_cost] = simulated_annealing_tsp_single_window(cities);
 
-
-%% ==========================================================
-%% --- Simulated Annealing Function (SINGLE FIGURE) ---
-%% ==========================================================
 function [best_route, best_cost] = simulated_annealing_tsp_single_window(cities)
 
 N = size(cities,1);
@@ -28,11 +21,9 @@ alpha     = 0.995;
 max_iter_per_temp = 50 * N;
 update_every = 10;
 
-%% -------- Single window layout --------
 figure('Name','Simulated Annealing TSP','NumberTitle','off');
 t = tiledlayout(1,2,'TileSpacing','compact','Padding','compact');
 
-%% ---- Left: TSP Animation ----
 ax1 = nexttile(t,1);
 hold(ax1,'on');
 
@@ -47,7 +38,6 @@ grid(ax1,'on');
 axis(ax1,'equal');
 xlim(ax1,[0 100]); ylim(ax1,[0 100]);
 
-%% ---- Right: Convergence plot ----
 ax2 = nexttile(t,2);
 h_conv = plot(ax2, nan, nan, 'k', 'LineWidth', 2);
 xlabel(ax2,'Iteration');
@@ -55,12 +45,10 @@ ylabel(ax2,'Best Cost');
 title(ax2,'Convergence');
 grid(ax2,'on');
 
-%% -------- Initial draw --------
 update_plot(h_line, h_title, cities, current_route, ...
             T_initial, current_cost, best_cost);
 drawnow;
 
-%% -------- Simulated Annealing --------
 T = T_initial;
 iter = 0;
 history = [];
@@ -68,7 +56,6 @@ history = [];
 while T > T_min
     for i = 1:max_iter_per_temp
 
-        % 2-opt move
         idx1 = randi(N-1);
         idx2 = randi([idx1+1, N]);
 
@@ -91,12 +78,10 @@ while T > T_min
         iter = iter + 1;
 
         if mod(iter, update_every) == 0 || i == 1
-            % Update TSP plot
             update_plot(h_line, h_title, cities, current_route, ...
                         T, current_cost, best_cost);
 
-            % Update convergence plot
-            history(end+1) = best_cost; %#ok<AGROW>
+            history(end+1) = best_cost;
             set(h_conv, 'XData', 1:numel(history), ...
                         'YData', history);
 
@@ -106,7 +91,6 @@ while T > T_min
     T = T * alpha;
 end
 
-%% -------- Final update --------
 update_plot(h_line, h_title, cities, best_route, ...
             T, best_cost, best_cost);
 
@@ -114,10 +98,6 @@ title(ax1, sprintf('FINAL - Best Cost: %.2f', best_cost));
 
 end
 
-
-%% ==========================================================
-%% --- Cost function ---
-%% ==========================================================
 function cost = calculate_cost(route, cities)
 points = cities(route,:);
 points = [points; points(1,:)];
@@ -125,10 +105,6 @@ diffs  = diff(points,1,1);
 cost   = sum(sqrt(sum(diffs.^2,2)));
 end
 
-
-%% ==========================================================
-%% --- Plot update ---
-%% ==========================================================
 function update_plot(h_line, h_title, cities, route, T, current_cost, best_cost)
 
 x = cities(route,1);
